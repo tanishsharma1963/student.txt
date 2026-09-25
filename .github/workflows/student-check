@@ -1,0 +1,66 @@
+name: Student Repository Check
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  check-repository:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Display student and repository information
+        run: |
+          echo "Student Information:"
+          cat student.txt
+          echo ""
+          echo "Current Date and Time:"
+          date
+          echo ""
+          echo "Repository Name:"
+          echo "${{ github.repository }}"
+          echo ""
+          echo "Branch Name:"
+          echo "${{ github.ref_name }}"
+
+      - name: Verify student.txt exists
+        run: |
+          if [ -f student.txt ]; then
+            echo "student.txt exists."
+          else
+            echo "student.txt does not exist."
+            exit 1
+          fi
+
+      - name: Display student.txt contents
+        run: |
+          echo "Contents of student.txt:"
+          cat student.txt
+
+      - name: Count lines in student.txt
+        run: |
+          echo "Number of lines:"
+          wc -l < student.txt
+
+      - name: Search for GitHub
+        run: |
+          echo "Searching for the word GitHub..."
+          grep -ni "GitHub" student.txt
+
+      - name: Create report
+        run: |
+          echo "Student repository verification completed." > report.txt
+          echo "Report created successfully."
+          cat report.txt
+
+      - name: Upload student report
+        uses: actions/upload-artifact@v4
+        with:
+          name: student-report
+          path: report.txt
